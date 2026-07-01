@@ -30,5 +30,5 @@ ADMIN_ID = YOUR_TELEGRAM_ID
 
 4. Run the bot:
 
-Bash
+```Bash
 python program.py
