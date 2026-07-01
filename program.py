@@ -18,9 +18,9 @@ def admin_panel(message):
         details_count = admin_stats['total_details']
         
         text = (
-            "👑 **ПАНЕЛЬ АДМІНІСТРАТОРА** 👑\n\n"
-            f"👥 Унікальних клієнтів: **{users_count}**\n"
-            f"🧱 Прораховано деталей: **{details_count}**\n"
+            "👑 **ADMIN PANEL** 👑\n\n"
+            f"👥 Unique clients: **{users_count}**\n"
+            f"🧱 Calculated details: **{details_count}**\n"
         )
         bot.send_message(chat_id, text, parse_mode='Markdown')
         
@@ -35,7 +35,7 @@ def send_welcome(message):
     
     if chat_id != ADMIN_ID:
         try:
-            bot.send_message(ADMIN_ID, f" Хтось новий запустив бота!\n Ім'я: {first_name}\n Прізвище: {last_name}\n Нікнейм: @{user_name}\n ID: {user_id}")
+            bot.send_message(ADMIN_ID, f" Someone new started the bot!\n First Name: {first_name}\n Last Name: {last_name}\n Username: @{user_name}\n ID: {user_id}")
         except:
             pass
     
@@ -49,22 +49,22 @@ def send_welcome(message):
         'current_S': 0
     }
     
-    povidomlenia = bot.send_message(chat_id, "Привіт! Починаємо новий розрахунок.\nНапишіть розміри першої деталі: товщина, довжина та висота через пробіл в см.")
+    povidomlenia = bot.send_message(chat_id, "Hello! Starting a new calculation.\nPlease enter the dimensions of the first detail: thickness, length, and height separated by spaces in cm.")
     bot.register_next_step_handler(povidomlenia, inputing)
     
 @bot.message_handler(commands=["help"])
 def send_help(message):
     chat_id = message.chat.id
     help_text = (
-        "📌 **Інструкція по використанню бота:**\n\n"
-        "1. Натисніть /start для початку нового розрахунку.\n"
-        "2. Введіть розміри деталі (товщина, довжина, висота) через пробіл в см.\n"
-        "3. Виберіть матеріал зі списку.\n"
-        "4. Після додавання деталей ви можете додати ще або завершити розрахунок.\n"
-        "5. Після завершення ви отримаєте підсумок замовлення.\n\n"
-        "👇 **Якщо ви знайшли помилку в роботі бота, просто опишіть її в повідомленні нижче.**\n"
-        "*(Це автоматична форма. Ми не зможемо вам відповісти, але обов'язково виправимо баг у майбутньому)*\n\n"
-        "▶️ Щоб просто продовжити роботу, натисніть /start"
+        "📌 **Bot usage instructions:**\n\n"
+        "1. Press /start to begin a new calculation.\n"
+        "2. Enter detail dimensions (thickness, length, height) separated by a space in cm.\n"
+        "3. Select a material from the list.\n"
+        "4. After adding details, you can add more or finish the calculation.\n"
+        "5. After finishing, you will get the order summary.\n\n"
+        "👇 **If you found an error in the bot, please describe it in a message below.**\n"
+        "*(This is an automated form. We cannot reply, but we will fix the bug in the future)*\n\n"
+        "▶️ To just continue working, press /start"
     )
     povidomlenia = bot.send_message(chat_id, help_text, parse_mode='Markdown')
     bot.register_next_step_handler(povidomlenia, receive_problem)
@@ -78,10 +78,10 @@ def receive_problem(message):
     
     user_name = message.from_user.first_name
     username = message.from_user.username
-    bot.send_message(chat_id, "✅ Дякуємо! Ваше повідомлення успішно надіслано розробнику.\n\nЩоб почати розрахунки, натисніть /start")
+    bot.send_message(chat_id, "✅ Thank you! Your message has been successfully sent to the developer.\n\nTo start calculating, press /start")
     
     try:
-        message_to_admin = f"Повідомлення від користувача {user_name} (@{username}):\n{problem_text}"
+        message_to_admin = f"🚨 **FEEDBACK / ERROR FROM USER**\n\nFrom: {user_name} (@{username}):\nMessage: {problem_text}"
         bot.send_message(ADMIN_ID, message_to_admin)
     except:
         pass
@@ -97,7 +97,7 @@ def inputing(message):
         elif message.text == '/help':
             send_help(message) 
         elif message.text == '/over':
-            bot.send_message(chat_id, "🛑 Розрахунок скасовано.\n▶️ Натисніть /start для нового замовлення.")
+            bot.send_message(chat_id, "🛑 Calculation canceled.\n▶️ Press /start for a new order.")
         return
     try:
         large, weight, hight = map(float, message.text.split())
@@ -116,15 +116,15 @@ def inputing(message):
         
         
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        markup.add("1. Базальт", "2. Габро", "3. Лабрадорит")
-        markup.add('4. Лезниківський', '5. Капустянський')
-        markup.add('6. Покостівський', '7. Жадківський')
+        markup.add("1. Basalt", "2. Gabbro", "3. Labradorite")
+        markup.add('4. Leznikovsky', '5. Kapustyansky')
+        markup.add('6. Pokostovsky', '7. Zhadkovsky')
         
-        povidomlenia = bot.send_message(chat_id, "Виберіть матеріал для цієї деталі:", reply_markup=markup)
+        povidomlenia = bot.send_message(chat_id, "Select a material for this detail:", reply_markup=markup)
         bot.register_next_step_handler(povidomlenia, stone_selection)
         
     except ValueError:
-        povidomlenia = bot.send_message(chat_id, "Будь ласка, введіть три числа через пробіл.")
+        povidomlenia = bot.send_message(chat_id, "Please enter three numbers separated by spaces.")
         bot.register_next_step_handler(povidomlenia, inputing)
 
 def stone_selection(message):
@@ -133,7 +133,7 @@ def stone_selection(message):
         bot.clear_step_handler_by_chat_id(chat_id)
         if message.text == '/start': send_welcome(message)
         elif message.text == '/help': send_help(message)
-        elif message.text == '/over': bot.send_message(chat_id, "🛑 Розрахунок скасовано.\n▶️ Натисніть /start")
+        elif message.text == '/over': bot.send_message(chat_id, "🛑 Calculation canceled.\n▶️ Press /start")
         return
     stone_type = message.text
     
@@ -143,29 +143,29 @@ def stone_selection(message):
     S_margin = current_data.get('current_S_margin', 0)
     S = current_data.get('current_S', 0)
     
-    if 'Базальт' in stone_type: 
+    if 'Basalt' in stone_type: 
         p = 2950; 
-        material_name = "Базальту"
-    elif 'Габро' in stone_type: 
+        material_name = "Basalt"
+    elif 'Gabbro' in stone_type: 
         p = 3000; 
-        material_name = "Габра"
-    elif 'Лабрадорит' in stone_type: 
+        material_name = "Gabbro"
+    elif 'Labradorite' in stone_type: 
         p = 2700; 
-        material_name = "Лабрадориту"
-    elif 'Лезниківський' in stone_type: 
+        material_name = "Labradorite"
+    elif 'Leznikovsky' in stone_type: 
         p = 2650; 
-        material_name = "Лезниківського граніту"
-    elif 'Капустянський' in stone_type: 
+        material_name = "Leznikovsky granite"
+    elif 'Kapustyansky' in stone_type: 
         p = 2750; 
-        material_name = "Капустянського граніту"
-    elif 'Покостівський' in stone_type: 
+        material_name = "Kapustyansky granite"
+    elif 'Pokostovsky' in stone_type: 
         p = 2740; 
-        material_name = "Покостівського граніту"
-    elif 'Жадківський' in stone_type: 
+        material_name = "Pokostovsky granite"
+    elif 'Zhadkovsky' in stone_type: 
         p = 2730; 
-        material_name = "Жадківського граніту" 
+        material_name = "Zhadkovsky granite" 
     else:
-        povidomlenia = bot.send_message(chat_id, "Будь ласка, виберіть матеріал зі списку.")
+        povidomlenia = bot.send_message(chat_id, "Please select a material from the list.")
         bot.register_next_step_handler(povidomlenia, stone_selection)
         return
     m = V * p
@@ -177,12 +177,12 @@ def stone_selection(message):
     admin_stats['total_details'] += 1
     
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    markup.add("➕ Додати ще деталь")
-    markup.add("✅ Завершити і показати загальну статистику")
+    markup.add("➕ Add another detail")
+    markup.add("✅ Finish and show overall summary")
     
     bot.send_message(
         chat_id, 
-        f"Деталь з {material_name} ({round(m, 2)} кг) додано!\nЩо робимо далі?",
+        f"Detail made of {material_name} ({round(m, 2)} kg) added!\nWhat should we do next?",
         reply_markup=markup
     )
 
@@ -194,17 +194,17 @@ def next_action(message):
         bot.clear_step_handler_by_chat_id(chat_id)
         if message.text == '/start': send_welcome(message)
         elif message.text == '/help': send_help(message)
-        elif message.text == '/over': bot.send_message(chat_id, "🛑 Розрахунок скасовано.\n▶️ Натисніть /start")
+        elif message.text == '/over': bot.send_message(chat_id, "🛑 Calculation canceled.\n▶️ Press /start")
         return
     choice = message.text
     
-    if choice and "Додати" in choice:
+    if choice and "Add" in choice:
         
         hide_markup = types.ReplyKeyboardRemove()
-        povidomlenia = bot.send_message(chat_id, "Напишіть розміри наступної деталі: товщина, довжина та висота в см:", reply_markup=hide_markup)
+        povidomlenia = bot.send_message(chat_id, "Enter the dimensions of the next detail: thickness, length, and height in cm:", reply_markup=hide_markup)
         bot.register_next_step_handler(povidomlenia, inputing)
         
-    elif choice and "Завершити" in choice:
+    elif choice and "Finish" in choice:
         
         current_data = user_data.get(chat_id, {})
         t_weight = current_data.get('total_weight', 0)
@@ -213,16 +213,16 @@ def next_action(message):
         t_surface_area = current_data.get('total_S', 0)
         hide_markup = types.ReplyKeyboardRemove()
         final_text = (
-            f" **ПІДСУМОК ЗАМОВЛЕННЯ:**\n\n"
-            f"Кількість деталей: **{count} шт.**\n"
-            f"Загальна маса: **{round(t_weight, 2)} кг**\n"
-            f"Площа від виробників(+15%): **{round(t_area, 2)} кв. м**\n"
-            f"Чиста площа: **{round(t_surface_area, 2)} кв. м**\n\n"
-            f"Щоб почати нове замовлення з нуля, натисніть /start"
+            f" **ORDER SUMMARY:**\n\n"
+            f"Number of details: **{count} pcs.**\n"
+            f"Total weight: **{round(t_weight, 2)} kg**\n"
+            f"Manufacturer's area (+15%): **{round(t_area, 2)} sq. m**\n"
+            f"Clean surface area: **{round(t_surface_area, 2)} sq. m**\n\n"
+            f"To start a new order from scratch, press /start"
         )
         bot.send_message(chat_id, final_text, parse_mode='Markdown', reply_markup=hide_markup)
     else:
-        povidomlenia = bot.send_message(chat_id, "Будь ласка, оберіть одну з опцій.")
+        povidomlenia = bot.send_message(chat_id, "Please select one of the options.")
         bot.register_next_step_handler(povidomlenia, next_action)
         
         
@@ -231,12 +231,12 @@ def cancel_order(message):
     chat_id = message.chat.id
 
     bot.clear_step_handler_by_chat_id(chat_id)
-    bot.send_message(chat_id, "🛑 Поточний розрахунок скасовано. Усі незбережені дані очищено.\n\n▶️ Щоб почати нове замовлення, натисніть /start")
+    bot.send_message(chat_id, "🛑 Current calculation canceled. All unsaved data cleared.\n\n▶️ To start a new order, press /start")
 
 commands = [
-    types.BotCommand("start", "Почати новий розрахунок"),
-    types.BotCommand("help", "Інструкція та підтримка"),
-    types.BotCommand("over", "Закінчити розрахунок та очистити дані"),
+    types.BotCommand("start", "Start a new calculation"),
+    types.BotCommand("help", "Instructions and support"),
+    types.BotCommand("over", "Finish calculation and clear data"),
 ]
 
 bot.set_my_commands(commands)
