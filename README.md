@@ -20,7 +20,7 @@ A Telegram bot designed to calculate the weight and surface area of stone materi
 
 1. Clone this repository to your local machine.
 2. Install the required library:
-   bash
+   ```bash
    pip install pyTelegramBotAPI
 3. Open program.py and replace the placeholders with your actual credentials:
 
